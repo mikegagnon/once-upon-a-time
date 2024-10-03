@@ -26,6 +26,22 @@ class Grapher {
 
     clickSegment(segmentId) {
         console.log(segmentId);
+
+        // if clicking on dot dot dot...
+        if (segmentId === -1) {
+            this.arrowRight();
+        } else if (segmentId === this.story[0].segmentId) {
+            return;
+        } else {
+            let nodeSegId = this.story.at(-1).segmentId;
+            while (nodeSegId != segmentId) {
+                this.arrowLeft();
+                nodeSegId = this.story.at(-1).segmentId;
+            }
+
+            this.arrowLeft();
+            this.arrowRight();
+        }
     }
 
     enrichNodes() {
