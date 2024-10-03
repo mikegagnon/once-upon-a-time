@@ -117,6 +117,7 @@ function main() {
     // GRAPH comes from nodes.js
     const grapher = new Grapher(GRAPH);
 
+    // https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/key
     window.addEventListener(
         "keydown",
         (event) => {
