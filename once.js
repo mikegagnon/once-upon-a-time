@@ -112,7 +112,13 @@ class Grapher {
 
         this.story.push(child);
 
-        return true;
+        if (child.children === undefined || child.children.length === 0) {
+            return true;
+        } else if (child.children.length === 1) {
+            return false
+        } else {
+            return true;
+        }
     }
 }
 
