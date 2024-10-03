@@ -209,94 +209,47 @@ class Grapher {
 
 
 
-
 /*class PagedStory {
     constructor(grapher, startPage) {
         this.grapher = grapher;
         this.startPage = startPage;
-        this.pages = {}
-        this.calcPages();
+
+
+        //this.segmentIds = 
+        this.search();
     }
 
-    // hacky (inefficient)
-    getPageNum(node) {
-        let p = this.startPage;
-        let slotN = 0;
-        let childN = 0;
-        let slot = this.grapher.slot[slot];
-        let node = slot
-    
+    getChildren(segmentId) {
+
+        const children = []
+
+        while () {
+            this.grapher.arrowRight();
+            const segid = this.story.at(-1).segmentId;
+            if (children.includes(segid)) {
+                return children;
+            }
+            children.push(segid);
+            this.grapher.arrowLeft()
+        }
 
     }
 
-    calcPages() {
-        let slot = 0;
-        let child = 0;
-        let pageNum = this.startPage;
-        
-        let page;
-        do {
-            page = genPage(slot, child, pageNum)
-            if (page) {
-                logPage(page)
-            };
-            pageNum += 2;
-        } while (page);
+    // https://en.wikipedia.org/wiki/Breadth-first_search
+    search() {
+        const explored = new Set();
+        const q = [];
+        const root = this.grapher.nodes[0];
+        explored.add(root.segmentId);
+        q.push(root);
+
+        while (q.length > 0) {
+            const v = q.shift();
+
+            const children = this.getChildren(v.segmentId);
+
+
+        }
+
     }
-
-    genPage(slot, child, pageNum)
-
-
-
 }*/
-
-class PagedStory {
-    constructor(grapher, startPage) {
-        this.grapher = grapher;
-        this.startPage = startPage;
-        this.segmentIds = 
-        this.makePages();
-    }
-
-    makePages() {
-        pageNum = this.startPage;
-        segmentId = this.grapher.story[0].segmentId;
-        storySegments = [segmentId];
-        visitedSegments = new Set();
-
-        while (true) {
-            if (visitedSegments.has(segmentId)){}
-        };
-    }
-
-    /*makePage() {
-        console.log(this.segmentId);
-        this.grapher.clickSegment()
-    }*/
-
-    /*makePages() {
-        let pageNum = this.startPage;
-        visited = new Set();
-        segments = []; 
-
-        const node = this.story[0];
-        while (node) {
-            const segmentId = node.segmentId;
-            const segmentText = this.grapher.getSegmentText(segmentId);
-            console.log(segmentText);
-
-            pageNum += 2;
-            //segments.push()
-
-        }
-
-        if (this.visited.has(segmentId)) {
-            this.arrowRight();
-            
-        } else {
-            return 
-        }
-
-    }*/
-}
-
