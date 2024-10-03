@@ -1,5 +1,7 @@
 // dedicated to the public domain, 2024
-
+// TODO:
+//      1. Collapse two nodes if the second node is the only child of the first node
+//      2. On right arrow press, always show the least recently presented node
 class Grapher {
     constructor(graph) {
         this.graph = graph;
