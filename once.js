@@ -31,8 +31,23 @@ class Grapher {
         }
 
         for (const link of this.links) {
+            const [sourceLabel, sourceSlot] = link.source;
+            const [targetLabel, targetSlot] = link.target;
+            
+            const sourceNode = this.slots[sourceSlot].find(n => n.label === sourceLabel);
+            if (sourceNode.children === undefined) {
+                sourceNode.children = [];
+            }
+
+            const targetNode = this.slots[targetSlot].find(n => n.label === targetLabel);
+
+            sourceNode.children.push(targetNode);
+            //console.log(sourceNode);
+
 
         }
+
+        console.log(this.slots);
     }
 
     render() {
