@@ -71,11 +71,14 @@ class Grapher {
         }
     }
 
-    getSegmentColor(segmentId) {
-        const segment = this.story
+    getSegmentText(segmentId) {
+        return this.story
             .flatMap(node => node.segmentId === segmentId ? [node.label] : [])
             .join('');
+    }
 
+    getSegmentColor(segmentId) {
+        const segment = this.getSegmentText(segmentId)
         const hue = ((segment.length * 829793) % 255) / 255; // stupid hash function
         const saturation = 0.5;
         const value = 0.8;
@@ -103,6 +106,15 @@ class Grapher {
 
     
     }
+
+    arrowDown() {
+        const node = this.story.at(-1);
+        const segmentId = node.segmentId;
+        this.clickSegment(segmentId);
+
+    }
+
+ 
 
     arrowLeft() {
         let done;
@@ -174,6 +186,25 @@ class Grapher {
             return true;
         }
     }
+
+    /*clearIteration() {
+        // segment id's
+        this.visited = new Set();
+        this.nodes = []; 
+    }
+
+    // for iterating
+    next() {
+        const lastNode = this.story.at(-1);
+        const segmentId = lastNode.segmentId;
+
+        if (this.visited.has(segmentId)) {
+            this.arrowRight();
+            
+        } else {
+            return 
+        }
+    }*/
 }
 
 
@@ -223,10 +254,49 @@ class PagedStory {
     constructor(grapher, startPage) {
         this.grapher = grapher;
         this.startPage = startPage;
+        this.segmentIds = 
+        this.makePages();
+    }
 
-        for (const node of grapher.nodes) {
+    makePages() {
+        pageNum = this.startPage;
+        segmentId = this.grapher.story[0].segmentId;
+        storySegments = [segmentId];
+        visitedSegments = new Set();
+
+        while (true) {
+            if (visitedSegments.has(segmentId)){}
+        };
+    }
+
+    /*makePage() {
+        console.log(this.segmentId);
+        this.grapher.clickSegment()
+    }*/
+
+    /*makePages() {
+        let pageNum = this.startPage;
+        visited = new Set();
+        segments = []; 
+
+        const node = this.story[0];
+        while (node) {
+            const segmentId = node.segmentId;
+            const segmentText = this.grapher.getSegmentText(segmentId);
+            console.log(segmentText);
+
+            pageNum += 2;
+            //segments.push()
 
         }
-    }
+
+        if (this.visited.has(segmentId)) {
+            this.arrowRight();
+            
+        } else {
+            return 
+        }
+
+    }*/
 }
 
