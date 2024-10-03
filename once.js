@@ -88,6 +88,18 @@ class Grapher {
         }
     }
 
+    getSegmentColor(segmentId) {
+        const segment = this.story
+            .flatMap(node => node.segmentId === segmentId ? [node.label] : [])
+            .join('');
+
+        const hue = ((segment.length * 8297393) % 255) / 255; // stupid hash function
+        const saturation = 0.5;
+        const value = 0.5;
+        const [r, g, b] = hsvToRgb(hue, saturation, value);
+        return (`rgb(${Math.floor(r) }, ${Math.floor(g)}, ${Math.floor(b)})`);
+    }
+
     arrowRight() {
         let done;
 
@@ -131,7 +143,9 @@ class Grapher {
 
 
 
+
 function main() {
+
     // GRAPH comes from nodes.js
     const grapher = new Grapher(GRAPH);
 
