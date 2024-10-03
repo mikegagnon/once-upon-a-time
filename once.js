@@ -230,9 +230,3 @@ function main() {
 }
 
 
-const GRAPHER = main();
-
-function CLICK_SEGMENT(segmentId) {
-    GRAPHER.clickSegment(segmentId);
-}
- 
