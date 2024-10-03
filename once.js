@@ -24,6 +24,10 @@ class Grapher {
         this.arrowRight();
     }
 
+    clickSegment(segmentId) {
+        console.log(segmentId);
+    }
+
     enrichNodes() {
         this.slots = [];
 
@@ -69,7 +73,7 @@ class Grapher {
         this.story.forEach(function(node) {
             const nugget = node.label;
             const color = THIS.getSegmentColor(node.segmentId);
-            $('#main').append(`<span class="nugget" style="background-color: ${color}">${nugget}</span>`);
+            $('#main').append(`<span class="nugget" onclick="CLICK_SEGMENT(${node.segmentId})" style="background-color: ${color}">${nugget}</span>`);
         });
     }
 
@@ -198,4 +202,10 @@ function main() {
     return grapher;
 }
 
+
 const GRAPHER = main();
+
+function CLICK_SEGMENT(segmentId) {
+    GRAPHER.clickSegment(segmentId);
+}
+ 
