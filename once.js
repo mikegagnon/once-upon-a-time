@@ -59,6 +59,8 @@ class Grapher {
         for (const link of this.links) {
             const [sourceLabel, sourceSlot] = link.source;
             const [targetLabel, targetSlot] = link.target;
+
+//            console.log(link.source, link.target)
             
             const sourceNode = this.slots[sourceSlot].find(n => n.label === sourceLabel);
             if (sourceNode.children === undefined) {
@@ -169,6 +171,8 @@ class Grapher {
         const lastNode = this.story.at(-1);
         const children = lastNode.children;
 
+        console.log(children);
+
         if (children === undefined) {
             return true;
         }
@@ -208,6 +212,49 @@ class Grapher {
 }
 
 
+class PagedStory {
+    constructor(graph, startPage) {
+        this.graph = graph;
+        this.startPage = startPage;
+
+        //this.segmentIds = 
+        //this.search();
+    }
+
+
+
+    /*search() {
+        this.pages = [];
+        let done = false;
+        let key;
+
+        while (!done) {
+
+            key = this.getNextKey(key);
+            let page;
+            [done, page] = this.nextPage(key)
+            if (!done) {
+                this.pages.push(page);
+            }
+        }
+
+        
+    }
+
+    getNextKey(key) {
+        const grapher = Grapher(this.graph);
+
+    }
+
+    nextPage(key) {
+        const done = true;
+        const page = "1";
+        nextKey = getNextKey(key);
+        return [done, nextKey, page];
+    }
+    */
+
+}   
 
 /*class PagedStory {
     constructor(grapher, startPage) {
