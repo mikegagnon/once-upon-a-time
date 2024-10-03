@@ -73,12 +73,17 @@ class Grapher {
 
     goLeft() {
         if (this.story.length === 1) {
-            return;
+            return true;
         }
 
         this.story.pop();
+        const node = this.story.at(-1);
 
-        return true;
+        if (node.children.length === 1) {
+            return false;
+        } else {
+            return true;
+        }
     }
 
     arrowRight() {
@@ -95,7 +100,7 @@ class Grapher {
         const children = lastNode.children;
 
         if (children === undefined) {
-            return;
+            return true;
         }
 
         //console.log(children);
