@@ -1,6 +1,12 @@
 // dedicated to the public domain, 2024
 
+
 class Grapher {
+
+    static getRandId() {
+       return Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
+    }
+
     constructor(graph) {
         this.graph = graph;
         this.nodes = this.graph.nodes;
@@ -10,8 +16,11 @@ class Grapher {
 
         // a list of nodes
         this.story = [];
-
-        this.story.push(this.nodes[0]);
+        
+        const firstNode = this.nodes[0];
+        firstNode.segmentId = Grapher.getRandId();
+        this.story.push(firstNode);
+        
         this.arrowRight();
     }
 
@@ -46,7 +55,7 @@ class Grapher {
         $("#main").empty();
         this.story.forEach(function(node) {
             const nugget = node.label;
-            $('#main').append(`<span class="nugget">${nugget}</span>`);
+            $('#main').append(`<span class="nugget">${nugget} (${node.segmentId})</span>`);
         });
     }
 
@@ -81,14 +90,23 @@ class Grapher {
 
     arrowRight() {
         let done;
+
+        let segmentId;
+        
+        if (this.story.length === 1) {
+            segmentId = this.story[0].segmentId;
+        } else {
+            segmentId = Grapher.getRandId();
+        }
+
         do {
-            done = this.goRight();
+            done = this.goRight(segmentId);
         } while (!done);
 
         this.render();
     }
 
-    goRight() {
+    goRight(segmentId) {
         const lastNode = this.story.at(-1);
         const children = lastNode.children;
 
@@ -98,7 +116,7 @@ class Grapher {
 
         lastNode.childrenIndex = (lastNode.childrenIndex + 1) % lastNode.children.length;
         const child = children[lastNode.childrenIndex];
-
+        child.segmentId = segmentId;
         this.story.push(child);
 
         if (child.children === undefined || child.children.length === 0) {
