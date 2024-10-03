@@ -70,11 +70,22 @@ class Grapher {
     render() {
         $("#main").empty();
         const THIS = this;
+        let lastNode;
         this.story.forEach(function(node) {
+            lastNode = node;
             const nugget = node.label;
             const color = THIS.getSegmentColor(node.segmentId);
             $('#main').append(`<span class="nugget" onclick="CLICK_SEGMENT(${node.segmentId})" style="background-color: ${color}">${nugget}</span>`);
         });
+
+        if (lastNode && (lastNode.children === undefined || lastNode.children.length === 0)) {
+            return;
+        }
+
+        $('#main').append(`<span class="nugget" onclick="CLICK_SEGMENT(-1)" style="background-color: yellow; width: 100px; display: inline-block;">... </span>`);
+
+
+    
     }
 
     arrowLeft() {
