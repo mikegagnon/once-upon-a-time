@@ -64,15 +64,33 @@ class Grapher {
     }
 
     arrowLeft() {
+        let done;
+        do {
+            done = this.goLeft();
+        } while (!done);
+        this.render();
+    }
+
+    goLeft() {
         if (this.story.length === 1) {
             return;
         }
 
         this.story.pop();
-        this.render();
+
+        return true;
     }
 
     arrowRight() {
+        let done;
+        do {
+            done = this.goRight();
+        } while (!done);
+
+        this.render();
+    }
+
+    goRight() {
         const lastNode = this.story.at(-1);
         const children = lastNode.children;
 
@@ -89,7 +107,7 @@ class Grapher {
 
         this.story.push(child);
 
-        this.render();
+        return true;
     }
 }
 
