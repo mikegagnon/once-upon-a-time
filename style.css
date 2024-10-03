@@ -1,7 +1,8 @@
 body {
-    font-size: 20pt;
+    font-size: 14pt;
 }
 
 .nugget {
     cursor: pointer;
+    font-size: 22pt;
 }
