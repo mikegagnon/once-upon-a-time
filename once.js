@@ -2,6 +2,7 @@
 // TODO:
 //      1. Collapse two nodes if the second node is the only child of the first node
 //      2. On right arrow press, always show the least recently presented node
+
 class Grapher {
     constructor(graph) {
         this.graph = graph;
@@ -39,6 +40,7 @@ class Grapher {
             const sourceNode = this.slots[sourceSlot].find(n => n.label === sourceLabel);
             if (sourceNode.children === undefined) {
                 sourceNode.children = [];
+                sourceNode.childrenIndex = 0;
             }
 
             const targetNode = this.slots[targetSlot].find(n => n.label === targetLabel);
@@ -55,7 +57,6 @@ class Grapher {
     render() {
         //console.log("render");
         $("#main").empty();
-        $("")
         this.story.forEach(function(node) {
             const nugget = node.label;
             $('#main').append(`<span class="nugget">${nugget}</span>`);
@@ -74,10 +75,17 @@ class Grapher {
     arrowRight() {
         const lastNode = this.story.at(-1);
         const children = lastNode.children;
+
+        if (children === undefined) {
+            return;
+        }
+
         //console.log(children);
 
-        // https://stackoverflow.com/questions/5915096/get-a-random-item-from-a-javascript-array
-        const child = children[Math.floor(Math.random() * children.length)];
+            // https://stackoverflow.com/questions/5915096/get-a-random-item-from-a-javascript-array
+            //const child = children[Math.floor(Math.random() * children.length)];
+        lastNode.childrenIndex = (lastNode.childrenIndex + 1) % lastNode.children.length;
+        const child = children[lastNode.childrenIndex];
 
         this.story.push(child);
 
