@@ -51,11 +51,25 @@ class Grapher {
         }
     }
 
+    getSegmentColor(segmentId) {
+        const segment = this.story
+            .flatMap(node => node.segmentId === segmentId ? [node.label] : [])
+            .join('');
+
+        const hue = ((segment.length * 829793) % 255) / 255; // stupid hash function
+        const saturation = 0.5;
+        const value = 0.8;
+        const [r, g, b] = hsvToRgb(hue, saturation, value);
+        return (`rgb(${Math.floor(r) }, ${Math.floor(g)}, ${Math.floor(b)})`);
+    }
+
     render() {
         $("#main").empty();
+        const THIS = this;
         this.story.forEach(function(node) {
             const nugget = node.label;
-            $('#main').append(`<span class="nugget">${nugget} (${node.segmentId})</span>`);
+            const color = THIS.getSegmentColor(node.segmentId);
+            $('#main').append(`<span class="nugget" style="background-color: ${color}">${nugget}</span>`);
         });
     }
 
@@ -88,17 +102,7 @@ class Grapher {
         }
     }
 
-    getSegmentColor(segmentId) {
-        const segment = this.story
-            .flatMap(node => node.segmentId === segmentId ? [node.label] : [])
-            .join('');
-
-        const hue = ((segment.length * 8297393) % 255) / 255; // stupid hash function
-        const saturation = 0.5;
-        const value = 0.5;
-        const [r, g, b] = hsvToRgb(hue, saturation, value);
-        return (`rgb(${Math.floor(r) }, ${Math.floor(g)}, ${Math.floor(b)})`);
-    }
+    
 
     arrowRight() {
         let done;
@@ -134,7 +138,7 @@ class Grapher {
         if (child.children === undefined || child.children.length === 0) {
             return true;
         } else if (child.children.length === 1) {
-            return false
+            return false;
         } else {
             return true;
         }
