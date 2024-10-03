@@ -5,7 +5,8 @@
     <title>Once upon a time...</title>
   </head>
   <body>
-    <div id="main">
+    <!-- hacky invisibility-->
+    <div id="main" style="display: none;">
 
     </div>
   </body>
@@ -14,11 +15,15 @@
   <script type="text/javascript" src="nodes.js"></script>
   <script type="text/javascript" src="once.js"></script>
   <script type="text/javascript">
+
+    function main() {
+        // GRAPH comes from nodes.js
+        const grapher = new Grapher(GRAPH);
+
+        return grapher;
+    }
+
     const GRAPHER = main();
 
-    function CLICK_SEGMENT(segmentId) {
-        GRAPHER.clickSegment(segmentId);
-    }
-    
   </script>
 </html>

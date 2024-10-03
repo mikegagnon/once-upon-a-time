@@ -179,3 +179,54 @@ class Grapher {
 
 
 
+/*class PagedStory {
+    constructor(grapher, startPage) {
+        this.grapher = grapher;
+        this.startPage = startPage;
+        this.pages = {}
+        this.calcPages();
+    }
+
+    // hacky (inefficient)
+    getPageNum(node) {
+        let p = this.startPage;
+        let slotN = 0;
+        let childN = 0;
+        let slot = this.grapher.slot[slot];
+        let node = slot
+    
+
+    }
+
+    calcPages() {
+        let slot = 0;
+        let child = 0;
+        let pageNum = this.startPage;
+        
+        let page;
+        do {
+            page = genPage(slot, child, pageNum)
+            if (page) {
+                logPage(page)
+            };
+            pageNum += 2;
+        } while (page);
+    }
+
+    genPage(slot, child, pageNum)
+
+
+
+}*/
+
+class PagedStory {
+    constructor(grapher, startPage) {
+        this.grapher = grapher;
+        this.startPage = startPage;
+
+        for (const node of grapher.nodes) {
+
+        }
+    }
+}
+
