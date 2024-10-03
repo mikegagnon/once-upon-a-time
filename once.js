@@ -47,11 +47,17 @@ class Grapher {
 
         }
 
-        console.log(this.slots);
+        //console.log(this.slots);
     }
 
     render() {
-        console.log("render");
+        //console.log("render");
+        $("#main").empty();
+        $("")
+        this.story.forEach(function(node) {
+            const nugget = node.label;
+            $('#main').append(`<span class="nugget">${nugget}</span>`);
+        });
     }
 
     arrowLeft() {
@@ -65,7 +71,13 @@ class Grapher {
 
     arrowRight() {
         const lastNode = this.story.at(-1);
-        const children = 
+        const children = lastNode.children;
+        //console.log(children);
+
+        // https://stackoverflow.com/questions/5915096/get-a-random-item-from-a-javascript-array
+        const child = children[Math.floor(Math.random() * children.length)];
+
+        this.story.push(child);
 
         this.render();
     }
