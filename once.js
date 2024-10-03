@@ -15,10 +15,11 @@ class Grapher {
         this.story = [];
 
         this.story.push(this.nodes[0]);
+        this.arrowRight();
 
-
-        const nugget = this.story[0].label;
-        $('#main').append(`<span class="nugget">${nugget}</span>`);
+        
+        //const nugget = this.story[0].label;
+        //$('#main').append(`<span class="nugget">${nugget}</span>`);
     }
 
     enrichNodes() {
