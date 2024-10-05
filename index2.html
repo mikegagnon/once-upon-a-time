@@ -1,0 +1,31 @@
+<!doctype html>
+<html>
+  <head>
+    <link rel="stylesheet" href="style.css">
+    <title>Once upon a time...</title>
+  </head>
+  <body>
+    <div id="main">
+
+    </div>
+    <p style="float: right; color: gray;">Use arrow keys, or click around.</p>
+  </body>
+  <script type="text/javascript" src="jquery-3.7.1.min.js"></script>
+  <script type="text/javascript" src="ztnd_graph.js"></script>
+  <script type="text/javascript" src="ztnd_choices.js"></script>
+  <script type="text/javascript" src="once2.js"></script>
+  <script type="text/javascript">
+
+    function main() {
+      const segGen = new SegmentGenerator(ZTND_GRAPH, ZTND_CHOICES);
+      const segJson = segGen.generate();
+
+      console.log(segJson);
+      return segGen;
+    }
+
+    const SEG_GEN = main();
+
+    
+  </script>
+</html>
