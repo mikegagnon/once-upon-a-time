@@ -69,7 +69,6 @@ class SegmentGenerator {
             const child = node[key];
             this.flatten(parent, child, text + key, index + 1);
         } else {
-
             for (const key of keys) {
                 const child = node[key];
                 const fulltext = text + key;
@@ -116,13 +115,79 @@ class SegmentGenerator {
         this.edges = [];
         this.nextId = 0;
         this.flatten(undefined, this.tree, "", 0);
+    }
+}
 
-        console.log(this.nodes)
+class Viz {
+    constructor(nodes, edges) {
+        this.nodes = nodes;
+        this.edges = edges;
+        this.story = [];
+        this.monotonic = 0;
+        this.init();
+        this.render();
     }
 
+    init() {
+        for (const e of this.edges) {
+            e.monotonic = this.monotonic;
+            this.monotonic += 1;
+        }
+        this.story.push(this.nodes[0]);
+    }
 
-    
+    getLastNode() {
+        return this.story.at(-1);
+    }
+
+    getLastEdges() {
+        const lastNode = this.getLastNode();
+        const lastEdges = this.edges.filter(e => e.direction === "forward" && e.from === lastNode.id);
+        lastEdges.sort((a,b) => a.id - b.id);
+        return lastEdges;
+    }
+
+    render() {
+        $("#main").empty();
+        for (const node of this.story) {
+            console.log(node);
+            $("#main").append(node.text);
+        }
+
+        const lastEdges = this.getLastEdges();
+        if (lastEdges.length > 0) {
+            $("#main").append("... ")
+        }
+
+    }
+
+    arrowRight() {
+        const lastEdges = this.getLastEdges();
 
 
+        
+        
+
+        lastEdges.sort((a,b) => a.monotonic - b.monotonic);
+        const edge = lastEdges[0];
+        edge.monotonic = this.monotonic;
+        this.monotonic += 1;
+
+        console.log(lastEdges)
+
+       
+
+        const node = this.nodes.filter(n => n.id == edge.to)[0];
+        this.story.push(node);
+        this.render();
+        
+    }
+
+    arrowLeft() {
+        if (this.story.length > 1) { 
+            this.story.pop();
+            this.render();
+        }
+    }
 
 }
