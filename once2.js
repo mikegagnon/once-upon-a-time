@@ -134,7 +134,11 @@ class Viz {
             this.monotonic += 1;
         }
         for (const n of this.nodes) {
-            n.hue = Math.floor(Math.random() * 255);
+
+            n.monotonic = this.monotonic;
+            this.monotonic += 1;
+            n.hue = (n.monotonic * 7876373) % 255;//Math.floor(Math.random() * 255);
+            console.log(n.monotonic)
         }
         this.story.push(this.nodes[0]);
     }
