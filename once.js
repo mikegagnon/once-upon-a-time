@@ -203,6 +203,8 @@ class Viz {
 
     clickSegment(segId) {
         if (segId === 0) {
+            this.story = [this.story[0]];
+            this.render();
             return;
         }
         if (segId === -1) {
