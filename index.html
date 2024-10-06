@@ -1,6 +1,8 @@
 <!doctype html>
 <html>
   <head>
+    <!-- https://developer.mozilla.org/en-US/docs/Web/HTML/Viewport_meta_tag -->
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="stylesheet" href="style.css">
     <title>Once upon a time...</title>
   </head>
@@ -11,14 +13,16 @@
     <p style="float: right; color: gray;">Use arrow keys, or click around.</p>
   </body>
   <script type="text/javascript" src="jquery-3.7.1.min.js"></script>
-  <script type="text/javascript" src="color-conversion-algorithms.js"></script>
-  <script type="text/javascript" src="nodes.js"></script>
-  <script type="text/javascript" src="once2.js"></script>
+  <script type="text/javascript" src="ztnd_graph.js"></script>
+  <script type="text/javascript" src="ztnd_choices.js"></script>
+  <script type="text/javascript" src="once.js"></script>
   <script type="text/javascript">
 
     function main() {
-      // GRAPH comes from nodes.js
-      const grapher = new Grapher(GRAPH);
+      const segGen = new SegmentGenerator(ZTND_GRAPH, ZTND_CHOICES);
+      segGen.generate();
+
+      const viz = new Viz(segGen.nodes, segGen.edges);
 
       // https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/key
       window.addEventListener(
@@ -31,7 +35,7 @@
             switch (event.key) {
               case "ArrowDown":
                 // Do something for "down arrow" key press.
-                grapher.arrowDown();
+                viz.arrowDown();
                 break;
               case "ArrowUp":
                 // Do something for "up arrow" key press.
@@ -39,11 +43,11 @@
                 break;
               case "ArrowLeft":
                 // Do something for "left arrow" key press.
-                grapher.arrowLeft();
+                viz.arrowLeft();
                 break;
               case "ArrowRight":
                 // Do something for "right arrow" key press.
-                grapher.arrowRight();
+                viz.arrowRight();
                 break;
               case "Enter":
                 // Do something for "enter" or "return" key press.
@@ -64,14 +68,15 @@
           true,
         );
 
-      return grapher;
+      return viz;
     }
 
-    const GRAPHER = main();
+    const VIZ = main();
 
-    function CLICK_SEGMENT(segmentId) {
-        GRAPHER.clickSegment(segmentId);
+    function CLICK_SEGMENT(segId) {
+      VIZ.clickSegment(segId);
     }
+
     
   </script>
 </html>

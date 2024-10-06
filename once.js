@@ -1,196 +1,220 @@
-// dedicated to the public domain, 2024
 
-
-class Grapher {
-
-    static getRandId() {
-       return Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
+class SegmentGenerator {
+    constructor(ztnd_graph, ztnd_choices) {
+        this.choices = ztnd_choices;
+        this.tree = undefined;
+        this.nodes = undefined;
+        this.edges = undefined;
     }
 
-    constructor(graph) {
-        this.graph = graph;
-        this.nodes = this.graph.nodes;
-        this.links = this.graph.links;
+    addStory(story) {
+        let node = this.tree;
+        for (let i = 0; i < story.length; i++) {
 
-        this.enrichNodes();
+            const char = story[i];
+            if (node === undefined) {
 
-        // a list of nodes
-        this.story = [];
-        
-        const firstNode = this.nodes[0];
-        firstNode.segmentId = Grapher.getRandId();
-        this.story.push(firstNode);
-        
-        this.arrowRight();
+                if (this.tree !== undefined) {
+                    console.error("this.tree !== undefined");
+                }
+                if (i !== 0) {
+                    console.error("i should equal 0");
+                }
+                
+                this.tree = {};
+                this.tree[char] = {};
+                node = this.tree[char];
+
+
+            } else {
+                if (char in node) {
+                    node = node[char];
+                } else {
+                    node[char] = {};
+                    node = node[char];
+                }
+            }
+        }
     }
 
-    clickSegment(segmentId) {
-        console.log(segmentId);
 
-        // if clicking on dot dot dot...
-        if (segmentId === -1) {
-            this.arrowRight();
-        } else if (segmentId === this.story[0].segmentId) {
-            return;
+    flatten(parent, node, text, index) {
+        const keys = Object.keys(node);
+        keys.sort();
+        if (keys.length === 0) {
+            const newId = this.nextId;
+            this.nextId ++;
+
+            const newNode = {
+                id: newId,
+                text: text
+            };
+            const backEdge = parent === undefined ? undefined : {
+                direction: "back",
+                from: newId,
+                to: parent.id
+            };
+            const forwardEdge = parent === undefined ? undefined : {
+                direction: "forward",
+                from: parent.id,
+                to: newId
+            };
+            this.nodes.push(newNode);
+            if (parent) {
+                this.edges.push(backEdge);
+                this.edges.push(forwardEdge);
+            }
+        } else if (keys.length === 1) {
+            const key = keys[0];
+            const child = node[key];
+            this.flatten(parent, child, text + key, index + 1);
         } else {
-            let nodeSegId = this.story.at(-1).segmentId;
-            while (nodeSegId != segmentId) {
-                this.arrowLeft();
-                nodeSegId = this.story.at(-1).segmentId;
+
+            const newId = this.nextId;
+            this.nextId++;
+
+            const newNode = {
+                id: newId,
+                text: text
+            };
+            const backEdge = parent === undefined ? undefined : {
+                direction: "back",
+                from: newId,
+                to: parent.id
+            };
+            const forwardEdge = parent === undefined ? undefined : {
+                direction: "forward",
+                from: parent.id,
+                to: newId
+            };
+            this.nodes.push(newNode);
+            if (parent) {
+                this.edges.push(backEdge);
+                this.edges.push(forwardEdge);
             }
 
-            this.arrowLeft();
-            this.arrowRight();
+            for (const key of keys) {
+                const child = node[key];
+                this.flatten(newNode, child, key, index + 1);
+            }
         }
     }
 
-    enrichNodes() {
-        this.slots = [];
-
-        for (const node of this.nodes) {
-            const label = node.label;
-            const ipos = node.ipos;
-            if (this.slots[ipos] === undefined) {
-                this.slots[ipos] = [];
-            }
-            this.slots[ipos].push(node);
+    generate() {
+        const stories = [];
+        for (const choice of this.choices) {
+            const story = choice.tokens.map(t => t.text).join("");
+            stories.push(story);
         }
-
-        for (const link of this.links) {
-            const [sourceLabel, sourceSlot] = link.source;
-            const [targetLabel, targetSlot] = link.target;
-
-//            console.log(link.source, link.target)
-            
-            const sourceNode = this.slots[sourceSlot].find(n => n.label === sourceLabel);
-            if (sourceNode.children === undefined) {
-                sourceNode.children = [];
-                sourceNode.childrenIndex = 0;
-            }
-
-            const targetNode = this.slots[targetSlot].find(n => n.label === targetLabel);
-            sourceNode.children.push(targetNode);
+        
+        for (const story of stories) {
+            this.addStory(story);
         }
+        
+        this.nodes = [];
+        this.edges = [];
+        this.nextId = 0;
+        this.flatten(undefined, this.tree, "", 0);
+    }
+}
+
+class Viz {
+    constructor(nodes, edges) {
+        this.nodes = nodes;
+        this.edges = edges;
+        this.story = [];
+        this.monotonic = 0;
+        this.init();
+        this.render();
     }
 
-    getSegmentText(segmentId) {
-        return this.story
-            .flatMap(node => node.segmentId === segmentId ? [node.label] : [])
-            .join('');
+    init() {
+        for (const e of this.edges) {
+            e.monotonic = this.monotonic;
+            this.monotonic += 1;
+        }
+        for (const n of this.nodes) {
+            n.monotonic = this.monotonic;
+            this.monotonic += 1;
+            n.hue = (n.monotonic * 7876373) % 255; // stupid hash function
+        }
+        this.story.push(this.nodes[0]);
     }
 
-    getSegmentColor(segmentId) {
-        const segment = this.getSegmentText(segmentId)
-        const hue = ((segment.length * 829793) % 255) / 255; // stupid hash function
-        const saturation = 0.5;
-        const value = 0.8;
-        const [r, g, b] = hsvToRgb(hue, saturation, value);
-        return (`rgb(${Math.floor(r) }, ${Math.floor(g)}, ${Math.floor(b)})`);
+    getLastNode() {
+        return this.story.at(-1);
+    }
+
+    getLastEdges() {
+        const lastNode = this.getLastNode();
+        const lastEdges = this.edges.filter(e => e.direction === "forward" && e.from === lastNode.id);
+        lastEdges.sort((a,b) => a.id - b.id);
+        return lastEdges;
     }
 
     render() {
         $("#main").empty();
-        const THIS = this;
-        let lastNode;
-        this.story.forEach(function(node) {
-            lastNode = node;
-            const nugget = node.label;
-            const color = THIS.getSegmentColor(node.segmentId);
-            $('#main').append(`<span class="nugget" onclick="CLICK_SEGMENT(${node.segmentId})" style="background-color: ${color}">${nugget}</span>`);
-        });
-
-        if (lastNode && (lastNode.children === undefined || lastNode.children.length === 0)) {
-            return;
+        for (const node of this.story) {
+            let nodeText;
+            if (node.id === 0) {
+                const head = node.text[0];
+                const tail = node.text.substring(1);
+                nodeText = `<span class='first-letter' style="background-color: hsl(${node.hue}, 100%, 72%)">${head}</span>${tail}`
+            } else {
+                nodeText = node.text;
+            }
+            $("#main").append(`<span onclick="CLICK_SEGMENT(${node.id})" class="nugget" style="background-color: hsl(${node.hue}, 100%, 72%)">${nodeText}</span>`);
         }
 
-        $('#main').append(`<span class="nugget" onclick="CLICK_SEGMENT(-1)" style="background-color: yellow; width: 100px; display: inline-block;">... </span>`);
-
-
-    
+        const lastEdges = this.getLastEdges();
+        if (lastEdges.length > 0) {
+            $("#main").append(`<span onclick="CLICK_SEGMENT(-1)" class="dotdotdot nugget">... </span>`)
+        }
     }
 
-    arrowDown() {
-        const node = this.story.at(-1);
-        const segmentId = node.segmentId;
-        this.clickSegment(segmentId);
-
+    arrowRight() {
+        const lastEdges = this.getLastEdges();
+        if (lastEdges.length === 0) {
+            return;
+        }
+        lastEdges.sort((a,b) => a.monotonic - b.monotonic);
+        const edge = lastEdges[0];
+        edge.monotonic = this.monotonic;
+        this.monotonic += 1;
+        const node = this.nodes.filter(n => n.id == edge.to)[0];
+        this.story.push(node);
+        this.render();
     }
-
- 
 
     arrowLeft() {
-        let done;
-        do {
-            done = this.goLeft();
-        } while (!done);
-
-        // this is a hack 
-        if (this.story.length === 1) {
-            this.arrowRight();
-        } else {
+        if (this.story.length > 1) { 
+            this.story.pop();
             this.render();
         }
     }
 
-    goLeft() {
-        if (this.story.length === 1) {
-            return true;
-        }
-
-        this.story.pop();
-        const node = this.story.at(-1);
-
-        if (node.children.length === 1) {
-            return false;
-        } else {
-            return true;
-        }
+    arrowDown() {
+        this.arrowLeft();
+        this.arrowRight();
     }
 
-    
-
-    arrowRight() {
-        let done;
-
-        let segmentId;
-        
-        if (this.story.length === 1) {
-            segmentId = this.story[0].segmentId;
-        } else {
-            segmentId = Grapher.getRandId();
+    clickSegment(segId) {
+        if (segId === 0) {
+            return;
         }
-
-        do {
-            done = this.goRight(segmentId);
-        } while (!done);
-
+        if (segId === -1) {
+            this.arrowRight();
+            return;
+        }
+        const newStory = [];
+        for (const node of this.story) {
+            if (node.id === segId) {
+                break;
+            }
+            newStory.push(node);
+        }
+        this.story = newStory;
+        this.arrowRight();
         this.render();
     }
-
-    goRight(segmentId) {
-        const lastNode = this.story.at(-1);
-        const children = lastNode.children;
-
-        console.log(children);
-
-        if (children === undefined) {
-            return true;
-        }
-
-        lastNode.childrenIndex = (lastNode.childrenIndex + 1) % lastNode.children.length;
-        const child = children[lastNode.childrenIndex];
-        child.segmentId = segmentId;
-        this.story.push(child);
-
-        if (child.children === undefined || child.children.length === 0) {
-            return true;
-        } else if (child.children.length === 1) {
-            return false;
-        } else {
-            return true;
-        }
-    }
-
- 
 }
-
