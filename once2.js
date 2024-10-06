@@ -157,7 +157,7 @@ class Viz {
     render() {
         $("#main").empty();
         for (const node of this.story) {
-            $("#main").append(`<span style="background-color: hsl(${node.hue}, 100%, 72%)">${node.text}</span>`);
+            $("#main").append(`<span class="nugget" style="background-color: hsl(${node.hue}, 100%, 72%)">${node.text}</span>`);
         }
 
         const lastEdges = this.getLastEdges();
