@@ -187,4 +187,9 @@ class Viz {
         }
     }
 
+    arrowDown() {
+        this.arrowLeft();
+        this.arrowRight();
+    }
+
 }
