@@ -133,6 +133,9 @@ class Viz {
             e.monotonic = this.monotonic;
             this.monotonic += 1;
         }
+        for (const n of this.nodes) {
+            n.hue = Math.floor(Math.random() * 255);
+        }
         this.story.push(this.nodes[0]);
     }
 
@@ -150,7 +153,7 @@ class Viz {
     render() {
         $("#main").empty();
         for (const node of this.story) {
-            $("#main").append(node.text);
+            $("#main").append(`<span style="background-color: hsl(${node.hue}, 100%, 72%)">${node.text}</span>`);
         }
 
         const lastEdges = this.getLastEdges();
