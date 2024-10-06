@@ -2,12 +2,6 @@
 class SegmentGenerator {
     constructor(ztnd_graph, ztnd_choices) {
         this.choices = ztnd_choices;
-
-        /*for (const c of this.choices){
-            const story = c.tokens.map(t => t.text).join(" ");
-            console.log(story);
-        }*/
-
         this.tree = undefined;
         this.nodes = undefined;
         this.edges = undefined;
@@ -121,8 +115,6 @@ class SegmentGenerator {
         this.edges = [];
         this.nextId = 0;
         this.flatten(undefined, this.tree, "", 0);
-
-        console.log(this.nodes)
     }
 }
 
@@ -158,7 +150,6 @@ class Viz {
     render() {
         $("#main").empty();
         for (const node of this.story) {
-            console.log(node);
             $("#main").append(node.text);
         }
 
@@ -166,29 +157,20 @@ class Viz {
         if (lastEdges.length > 0) {
             $("#main").append("... ")
         }
-
     }
 
     arrowRight() {
         const lastEdges = this.getLastEdges();
-
-
-        
-        
-
+        if (lastEdges.length === 0) {
+            return;
+        }
         lastEdges.sort((a,b) => a.monotonic - b.monotonic);
         const edge = lastEdges[0];
         edge.monotonic = this.monotonic;
         this.monotonic += 1;
-
-        console.log(lastEdges)
-
-       
-
         const node = this.nodes.filter(n => n.id == edge.to)[0];
         this.story.push(node);
         this.render();
-        
     }
 
     arrowLeft() {
