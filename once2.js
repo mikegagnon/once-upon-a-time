@@ -155,8 +155,19 @@ class Viz {
     render() {
         $("#main").empty();
         for (const node of this.story) {
-            $("#main").append(`<span class="nugget" style="background-color: hsl(${node.hue}, 100%, 72%)">${node.text}</span>`);
+            let nodeText;
+            if (node.id === 0) {
+                const head = node.text[0];
+                const tail = node.text.substring(1);
+                nodeText = `<span class='first-letter' style="background-color: hsl(${node.hue}, 100%, 72%)">${head}</span>${tail}`
+            } else {
+                nodeText = node.text;
+            }
+            //${node.text}
+            $("#main").append(`<span class="nugget" style="background-color: hsl(${node.hue}, 100%, 72%)">${nodeText}</span>`);
         }
+
+        //$("#main .nugget:first").wrap("<span class='first-letter'>");
 
         const lastEdges = this.getLastEdges();
         if (lastEdges.length > 0) {
