@@ -169,6 +169,9 @@ class Viz {
         const lastEdges = this.getLastEdges();
         if (lastEdges.length > 0) {
             $("#main").append(`<span onclick="CLICK_SEGMENT(-1)" class="dotdotdot nugget">... </span>`)
+        } else {
+            $("#main").append(`<span class="dotdotdot nugget">... The End!</span>`)
+
         }
     }
 
