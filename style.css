@@ -17,5 +17,10 @@ body {
     padding-top: 4px;
     padding-right: 8px;
     padding-left: 3px;
-  }
+}
 
+.dotdotdot {
+    width: 150px;
+    display: inline-block;
+    background-color: hsl(62, 100%, 72%);
+}

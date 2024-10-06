@@ -168,7 +168,7 @@ class Viz {
 
         const lastEdges = this.getLastEdges();
         if (lastEdges.length > 0) {
-            $("#main").append("... ")
+            $("#main").append(`<span onclick="CLICK_SEGMENT(-1)" class="dotdotdot nugget">... </span>`)
         }
     }
 
@@ -200,6 +200,10 @@ class Viz {
 
     clickSegment(segId) {
         if (segId === 0) {
+            return;
+        }
+        if (segId === -1) {
+            this.arrowRight();
             return;
         }
         const newStory = [];
