@@ -118,7 +118,133 @@ class SegmentGenerator {
     }
 }
 
-class Viz {
+class PagedStory {
+    constructor(nodes, edges) {
+        this.nodes = nodes;
+        this.edges = edges;
+        this.pages = [];
+    }
+
+    getPrefix(node) {
+        const text = [node.text];
+        while (node.id !== 0) {
+            const e = this.edges.find(e => e.direction === "back" && e.from === node.id);
+            node = this.nodes.find(n => n.id === e.to);
+            text.unshift(node.text);
+        }
+        return text;
+
+    }
+
+    getPage(node) {
+        const outEdges = this.getOutEdges(node);
+        const outNodes = outEdges.map(e => this.nodes.find(n => n.id === e.to));
+        const choices = outNodes;/*.map(n => {
+            text: n.text,
+            nodeId: n.id,
+        });*/
+
+        const text = this.getPrefix(node);
+        const nodeId = node.id;
+
+        const page = {
+            text,
+            choices,
+            nodeId
+        };
+
+        return page;
+    }
+
+    getOutEdges(node) {
+        return this.edges.filter(e => e.from === node.id && e.direction === "forward");
+    }
+
+    genPageNums() {
+        const pageStart = 3;
+        this.pages.forEach((page, i) => page.pageNum = i * 2 + pageStart);
+        this.nodes.forEach(node => node.pageNum = this.pages.find(page => page.nodeId === node.id).pageNum);
+        //this.pages.forEach(page => page.choices.forEach(node => node.pageNum =x));
+    }
+
+    generate() {
+
+        // https://en.wikipedia.org/wiki/Breadth-first_search
+        const q = [];
+        const root = this.nodes[0];
+        root.explored = true;
+        q.push(root);
+
+        const page = this.getPage(root);
+        this.pages.push(page);
+
+        while (q.length > 0) {
+            const v = q.shift();
+            //const outEdges = this.edges.filter(e => e.from === v.id && e.direction === forward);
+            const outEdges = this.getOutEdges(v);
+            for (const e of outEdges) {
+                const w = this.nodes.filter(n => n.id === e.to)[0];
+                if (w.explored === undefined) {
+                    w.explored = true;
+                    const page = this.getPage(w);
+                    this.pages.push(page);
+                    q.unshift(w);
+
+                }
+            }
+        }
+
+        this.genPageNums();
+    }
+}
+
+class PagedViz {
+    constructor(pages) {
+        this.pages = pages;
+        this.render();
+    }
+
+    getPageHtml(page) {
+        let body;
+        if (page.text.length === 1) {
+            body = page.text[0] + "...";
+        } else {
+            const last = page.text.pop();
+            const prefix = page.text.join("")
+            body = prefix + `<span style="text-decoration: underline;">${last}</span>...`;
+        }
+
+        const choicesHtml = page.choices.map(node =>
+            `<div style="padding-left: 20px">${node.text}... turn to page ${node.pageNum}</div>`
+        ).join("<br><br>");
+
+        const html = `
+            <p>${page.pageNum}</p>
+            <p>${body}</p>
+            <div>
+                ${choicesHtml}
+            </div>
+            
+        `;
+        return html;
+    }
+
+    render() {
+        for (const page of this.pages) {
+            /*if (page.length === 1) {
+                const text = page.text[0];
+                $("#main").append(text);
+            } else {
+                //const text = page.text.join("");
+                $("#main").append(text);
+            }*/
+            const html = this.getPageHtml(page);
+            $("#main").append(html);
+        }
+    }
+}
+
+class SegmentViz {
     constructor(nodes, edges) {
         this.nodes = nodes;
         this.edges = edges;

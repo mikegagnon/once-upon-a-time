@@ -1,30 +1,36 @@
 <!doctype html>
 <html>
   <head>
+    <!-- https://developer.mozilla.org/en-US/docs/Web/HTML/Viewport_meta_tag -->
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="stylesheet" href="style.css">
     <title>Once upon a time...</title>
   </head>
   <body>
-    <!-- hacky invisibility-->
-    <div id="main" style="display: none;">
+    <div id="main">
 
     </div>
   </body>
   <script type="text/javascript" src="jquery-3.7.1.min.js"></script>
-  <script type="text/javascript" src="color-conversion-algorithms.js"></script>
-  <script type="text/javascript" src="nodes.js"></script>
+  <script type="text/javascript" src="ztnd_graph.js"></script>
+  <script type="text/javascript" src="ztnd_choices.js"></script>
   <script type="text/javascript" src="once.js"></script>
   <script type="text/javascript">
 
-    /*function main() {
-        // GRAPH comes from nodes.js
-        const grapher = new Grapher(GRAPH);
-        const pagedStory = new PagedStory(grapher, 1);
+    function main() {
+      const segGen = new SegmentGenerator(ZTND_GRAPH, ZTND_CHOICES);
+      segGen.generate();
+      const paged = new PagedStory(segGen.nodes, segGen.edges);
+      paged.generate();
+      const viz = new PagedViz(paged.pages);
 
-        return pagedStory;
+      return viz;
     }
 
-    const PAGED_STORY = main();*/
+    const PAGED_VIZ = main();
 
+    
+
+    
   </script>
 </html>

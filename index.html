@@ -22,7 +22,7 @@
       const segGen = new SegmentGenerator(ZTND_GRAPH, ZTND_CHOICES);
       segGen.generate();
 
-      const viz = new Viz(segGen.nodes, segGen.edges);
+      const viz = new SegmentViz(segGen.nodes, segGen.edges);
 
       // https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/key
       window.addEventListener(
@@ -71,10 +71,10 @@
       return viz;
     }
 
-    const VIZ = main();
+    const SEG_VIZ = main();
 
     function CLICK_SEGMENT(segId) {
-      VIZ.clickSegment(segId);
+      SEG_VIZ.clickSegment(segId);
     }
 
     
