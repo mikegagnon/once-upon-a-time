@@ -207,22 +207,25 @@ class PagedViz {
     getPageHtml(page) {
         let body;
         if (page.text.length === 1) {
-            body = page.text[0] + "...";
+            body = page.text[0];
         } else {
             const last = page.text.pop();
             const prefix = page.text.join("")
-            body = prefix + `<span style="text-decoration: underline;">${last}</span>...`;
+            body = prefix + `<span style="text-decoration: underline;">${last}</span>`;
         }
 
         const choicesHtml = page.choices.map(node =>
-            `<div style="padding-left: 20px">${node.text}... turn to page ${node.pageNum}</div>`
+            `<div style="padding-left: 20px">${node.text}...</div><div style="float: right;">turn to page ${node.pageNum}</div>`
         ).join("<br><br>");
 
         const html = `
-            <p>${page.pageNum}</p>
-            <p>${body}</p>
-            <div>
-                ${choicesHtml}
+            <div style="background-color: #ddd; border-radius: 10px; margin: 10px; padding: 10px;">
+                <p style="font-size: 20pt;">${body}</p>
+                <div>
+                    ${choicesHtml}
+                </div>
+                <center><p style="padding-top: 30px;">Page ${page.pageNum}</p></center>
+
             </div>
             
         `;
