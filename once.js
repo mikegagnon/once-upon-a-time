@@ -124,7 +124,6 @@ class PagedStory {
         this.edges = edges;
         this.pages = [];
         this.pageStart = 1;
-
     }
 
     getPrefix(node) {
@@ -135,7 +134,6 @@ class PagedStory {
             text.unshift(node.text);
         }
         return text;
-
     }
 
     getPage(node) {
@@ -146,7 +144,7 @@ class PagedStory {
         const text = this.getPrefix(node);
         const nodeId = node.id;
 
-        const backNodeId = this.edges.filter(e => e.from === node.id && e.direction === "back").map(e => e.to);
+        const backNodeId = this.edges.find(e => e.from === node.id && e.direction === "back")?.to;
 
         const page = {
             text,
@@ -165,9 +163,7 @@ class PagedStory {
     genPageNums() {
         this.pages.forEach((page, i) => page.pageNum = i * 2 + this.pageStart);
         this.nodes.forEach(node => node.pageNum = this.pages.find(page => page.nodeId === node.id).pageNum);
-        //this.nodes.forEach(node => node.backPageNum = this.pages.find(page => page.backNodeId === node.id).pageNum);
-        this.pages.forEach(page => page.backPageNum = this.nodes.find(n => page.backNodeId).pageNum);
-
+        this.pages.forEach(page => page.backPageNum = this.nodes.find(node => page.backNodeId === node.id)?.pageNum);
     }
 
     generate() {
@@ -183,7 +179,6 @@ class PagedStory {
 
         while (q.length > 0) {
             const v = q.shift();
-            //const outEdges = this.edges.filter(e => e.from === v.id && e.direction === forward);
             const outEdges = this.getOutEdges(v);
             for (const e of outEdges) {
                 const w = this.nodes.filter(n => n.id === e.to)[0];
@@ -209,9 +204,6 @@ class PagedViz {
     }
 
     getPageHtml(page) {
-
-        //const backPageNum = page.
-
         let body;
         let bodyLatex;
         if (page.text.length === 1) {
@@ -221,26 +213,10 @@ class PagedViz {
             const last = page.text.at(-1);//pop();
             const prefix = page.text.slice(0, -1).join("")
             body = prefix + `<span style="text-decoration: underline;">${last}</span>`;
-
             bodyLatex = prefix + `\\ul{${last.trimEnd()}}`;
-            //bodyLatex = prefix + last.trimEnd();
         }
 
         bodyLatex += `\\\\ \\vspace{5mm}\n\n`;
-
-        const choicesHtml = page.choices.map(node =>
-            `<div style="padding-left: 20px">${node.text}...</div><div style="float: right;"><span style="cursor: pointer; text-decoration: underline;" onclick="CLICK_PAGE_TURN(${node.pageNum})">turn to page ${node.pageNum}<span></div>`
-        ).join("<br><br>");
-
-        let choicesLatex = page.choices.map(node =>
-            `${node.text} \\hfill \\textit{turn to page ${node.pageNum}}`
-        ).join(`\\\\ \\vspace{5mm}\n\n`);
-
-        choicesLatex = `
-        \\hspace{1cm}\\begin{minipage}{6cm}
-        \\normalsize
-            ${choicesLatex}
-        \\end{minipage}`;
 
         let theEnd;
         let theEndLatex;
@@ -264,14 +240,31 @@ class PagedViz {
                 back = `<div style="padding-top: 30px;">
                     <center>(<span style="cursor: pointer; text-decoration: underline;" onclick="CLICK_PAGE_TURN(${page.backPageNum})">or return to page ${page.backPageNum})</span></center>
                 </div>`;
-                backLatex = `(or return to page ${page.backPageNum})`;
+                backLatex = `\\hfill \\textit{or return to page ${page.backPageNum}}`;
             } else {
                 back = `<div style="padding-top: 30px;">
                     <center>(<span style="cursor: pointer; text-decoration: underline;" onclick="CLICK_PAGE_TURN(${page.backPageNum})">return to page ${page.backPageNum})</span></center>
                 </div>`;
-                backLatex = `return to page ${page.backPageNum}`;
+                backLatex = `\\hfill \\textit{return to page ${page.backPageNum}}`;
             }
         }
+
+        const choicesHtml = page.choices.map(node =>
+            `<div style="padding-left: 20px">${node.text}...</div><div style="float: right;"><span style="cursor: pointer; text-decoration: underline;" onclick="CLICK_PAGE_TURN(${node.pageNum})">turn to page ${node.pageNum}<span></div>`
+        ).join("<br><br>");
+
+        let choicesLatex = page.choices.map(node =>
+            `${node.text} \\hfill \\textit{turn to page ${node.pageNum}}`
+        );
+        
+        choicesLatex.push(backLatex);     
+        choicesLatex = choicesLatex.join(`\\\\ \\vspace{5mm}\n\n`);
+
+        choicesLatex = `
+        \\hspace{1cm}\\begin{minipage}{6cm}
+        \\normalsize
+            ${choicesLatex}
+        \\end{minipage}`;
 
         const html = `
             <div style="background-color: #ddd; border-radius: 10px; margin: 10px; padding: 10px;">
@@ -293,14 +286,13 @@ class PagedViz {
         \\hspace{1cm}\\vfill
         \\begin{minipage}{3in}
         \\LARGE
-        ${bodyLatex.trim()} \\\\ \n${choicesLatex} ${theEndLatex.trim()}
+        ${bodyLatex.trim()} \\\\\n ${theEndLatex.trim()} \\\\ \n${choicesLatex} 
         \\end{minipage}
         \\hspace{1cm}\\vfill
         \\cleardoublepage
 
         `
 
-        //console.log(latex)
         return [html, latex];
     }
 
