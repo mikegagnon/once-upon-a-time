@@ -123,7 +123,7 @@ class PagedStory {
         this.nodes = nodes;
         this.edges = edges;
         this.pages = [];
-        this.pageStart = 3;
+        this.pageStart = 1;
 
     }
 
@@ -213,40 +213,63 @@ class PagedViz {
         //const backPageNum = page.
 
         let body;
+        let bodyLatex;
         if (page.text.length === 1) {
             body = page.text[0];
+            bodyLatex = page.text[0];
         } else {
             const last = page.text.at(-1);//pop();
-            console.log(last)
             const prefix = page.text.slice(0, -1).join("")
             body = prefix + `<span style="text-decoration: underline;">${last}</span>`;
+
+            bodyLatex = prefix + `\\ul{${last.trimEnd()}}`;
+            //bodyLatex = prefix + last.trimEnd();
         }
+
+        bodyLatex += `\\\\ \\vspace{5mm}\n\n`;
 
         const choicesHtml = page.choices.map(node =>
             `<div style="padding-left: 20px">${node.text}...</div><div style="float: right;"><span style="cursor: pointer; text-decoration: underline;" onclick="CLICK_PAGE_TURN(${node.pageNum})">turn to page ${node.pageNum}<span></div>`
         ).join("<br><br>");
 
+        let choicesLatex = page.choices.map(node =>
+            `${node.text} \\hfill \\textit{turn to page ${node.pageNum}}`
+        ).join(`\\\\ \\vspace{5mm}\n\n`);
+
+        choicesLatex = `
+        \\hspace{1cm}\\begin{minipage}{6cm}
+        \\normalsize
+            ${choicesLatex}
+        \\end{minipage}`;
+
         let theEnd;
+        let theEndLatex;
         if (page.choices.length === 0) {
             theEnd = `<div style="padding-top: 30px;">
                 <center>The End!</center>
             </div>`;
+            theEndLatex = `\\\\\\vspace{1cm} The End!`
         } else {
             theEnd = "";
+            theEndLatex ="";
         }
 
         let back;
+        let backLatex;
         if (page.text.length === 1) {
             back = "";
+            backLatex = "";
         } else {
             if (theEnd === "") {
                 back = `<div style="padding-top: 30px;">
                     <center>(<span style="cursor: pointer; text-decoration: underline;" onclick="CLICK_PAGE_TURN(${page.backPageNum})">or return to page ${page.backPageNum})</span></center>
                 </div>`;
+                backLatex = `(or return to page ${page.backPageNum})`;
             } else {
                 back = `<div style="padding-top: 30px;">
                     <center>(<span style="cursor: pointer; text-decoration: underline;" onclick="CLICK_PAGE_TURN(${page.backPageNum})">return to page ${page.backPageNum})</span></center>
                 </div>`;
+                backLatex = `return to page ${page.backPageNum}`;
             }
         }
 
@@ -264,14 +287,48 @@ class PagedViz {
             </div>
             
         `;
-        return html;
+
+        const latex = `
+
+        \\hspace{1cm}\\vfill
+        \\begin{minipage}{3in}
+        \\LARGE
+        ${bodyLatex.trim()} \\\\ \n${choicesLatex} ${theEndLatex.trim()}
+        \\end{minipage}
+        \\hspace{1cm}\\vfill
+        \\cleardoublepage
+
+        `
+
+        //console.log(latex)
+        return [html, latex];
     }
 
     clickPageTurn(pageNum) {
         $("#main").empty();
         const page = this.pages.find(p => p.pageNum === pageNum);
-        const html = this.getPageHtml(page);
+        const [html, latex] = this.getPageHtml(page);
         $("#main").append(html);
+    }
+
+    genLatex() {
+        const latexPages = this.pages.map(page => this.getPageHtml(page)[1]).join("\n");
+
+        const latex = `        
+            \\documentclass{memoir}
+            \\usepackage{soul}
+            \\usepackage[paperwidth=6in, paperheight=9in,bindingoffset=.75in]{geometry}
+            \\author{[Author list]}
+            \\title{\\HUGE The Legend of Elara}
+            \\begin{document}
+            \\maketitle
+            \\thispagestyle{empty} 
+            \\mainmatter
+            ${latexPages}
+            \\end{document}
+            `
+        console.log(latex);
+
     }
 }
 

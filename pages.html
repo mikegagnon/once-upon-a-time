@@ -23,7 +23,8 @@
       const paged = new PagedStory(segGen.nodes, segGen.edges);
       paged.generate();
       const viz = new PagedViz(paged);
-
+      viz.genLatex();
+      
       return viz;
     }
 
