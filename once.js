@@ -141,16 +141,16 @@ class PagedStory {
     getPage(node) {
         const outEdges = this.getOutEdges(node);
         const outNodes = outEdges.map(e => this.nodes.find(n => n.id === e.to));
-        const choices = outNodes;/*.map(n => {
-            text: n.text,
-            nodeId: n.id,
-        });*/
+        const choices = outNodes;
 
         const text = this.getPrefix(node);
         const nodeId = node.id;
 
+        const backNodeId = this.edges.filter(e => e.from === node.id && e.direction === "back").map(e => e.to);
+
         const page = {
             text,
+            backNodeId,
             choices,
             nodeId
         };
@@ -165,7 +165,9 @@ class PagedStory {
     genPageNums() {
         this.pages.forEach((page, i) => page.pageNum = i * 2 + this.pageStart);
         this.nodes.forEach(node => node.pageNum = this.pages.find(page => page.nodeId === node.id).pageNum);
-        //this.pages.forEach(page => page.choices.forEach(node => node.pageNum =x));
+        //this.nodes.forEach(node => node.backPageNum = this.pages.find(page => page.backNodeId === node.id).pageNum);
+        this.pages.forEach(page => page.backPageNum = this.nodes.find(n => page.backNodeId).pageNum);
+
     }
 
     generate() {
@@ -207,6 +209,9 @@ class PagedViz {
     }
 
     getPageHtml(page) {
+
+        //const backPageNum = page.
+
         let body;
         if (page.text.length === 1) {
             body = page.text[0];
@@ -221,12 +226,39 @@ class PagedViz {
             `<div style="padding-left: 20px">${node.text}...</div><div style="float: right;"><span style="cursor: pointer; text-decoration: underline;" onclick="CLICK_PAGE_TURN(${node.pageNum})">turn to page ${node.pageNum}<span></div>`
         ).join("<br><br>");
 
+        let theEnd;
+        if (page.choices.length === 0) {
+            theEnd = `<div style="padding-top: 30px;">
+                <center>The End!</center>
+            </div>`;
+        } else {
+            theEnd = "";
+        }
+
+        let back;
+        if (page.text.length === 1) {
+            back = "";
+        } else {
+            if (theEnd === "") {
+                back = `<div style="padding-top: 30px;">
+                    <center>(<span style="cursor: pointer; text-decoration: underline;" onclick="CLICK_PAGE_TURN(${page.backPageNum})">or return to page ${page.backPageNum})</span></center>
+                </div>`;
+            } else {
+                back = `<div style="padding-top: 30px;">
+                    <center>(<span style="cursor: pointer; text-decoration: underline;" onclick="CLICK_PAGE_TURN(${page.backPageNum})">return to page ${page.backPageNum})</span></center>
+                </div>`;
+            }
+        }
+
         const html = `
             <div style="background-color: #ddd; border-radius: 10px; margin: 10px; padding: 10px;">
                 <p style="font-size: 20pt;">${body}</p>
                 <div>
                     ${choicesHtml}
                 </div>
+                ${theEnd}
+
+                ${back}
                 <center><p style="padding-top: 30px;">Page ${page.pageNum}</p></center>
 
             </div>
@@ -240,8 +272,6 @@ class PagedViz {
         const page = this.pages.find(p => p.pageNum === pageNum);
         const html = this.getPageHtml(page);
         $("#main").append(html);
-
-
     }
 }
 
