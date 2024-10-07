@@ -123,6 +123,8 @@ class PagedStory {
         this.nodes = nodes;
         this.edges = edges;
         this.pages = [];
+        this.pageStart = 3;
+
     }
 
     getPrefix(node) {
@@ -161,8 +163,7 @@ class PagedStory {
     }
 
     genPageNums() {
-        const pageStart = 3;
-        this.pages.forEach((page, i) => page.pageNum = i * 2 + pageStart);
+        this.pages.forEach((page, i) => page.pageNum = i * 2 + this.pageStart);
         this.nodes.forEach(node => node.pageNum = this.pages.find(page => page.nodeId === node.id).pageNum);
         //this.pages.forEach(page => page.choices.forEach(node => node.pageNum =x));
     }
@@ -199,9 +200,10 @@ class PagedStory {
 }
 
 class PagedViz {
-    constructor(pages) {
-        this.pages = pages;
-        this.render();
+    constructor(pagedStory) {
+        this.pages = pagedStory.pages;
+        this.pageStart = pagedStory.pageStart;
+        this.clickPageTurn(this.pageStart);
     }
 
     getPageHtml(page) {
@@ -209,13 +211,14 @@ class PagedViz {
         if (page.text.length === 1) {
             body = page.text[0];
         } else {
-            const last = page.text.pop();
-            const prefix = page.text.join("")
+            const last = page.text.at(-1);//pop();
+            console.log(last)
+            const prefix = page.text.slice(0, -1).join("")
             body = prefix + `<span style="text-decoration: underline;">${last}</span>`;
         }
 
         const choicesHtml = page.choices.map(node =>
-            `<div style="padding-left: 20px">${node.text}...</div><div style="float: right;">turn to page ${node.pageNum}</div>`
+            `<div style="padding-left: 20px">${node.text}...</div><div style="float: right;"><span style="cursor: pointer; text-decoration: underline;" onclick="CLICK_PAGE_TURN(${node.pageNum})">turn to page ${node.pageNum}<span></div>`
         ).join("<br><br>");
 
         const html = `
@@ -232,18 +235,13 @@ class PagedViz {
         return html;
     }
 
-    render() {
-        for (const page of this.pages) {
-            /*if (page.length === 1) {
-                const text = page.text[0];
-                $("#main").append(text);
-            } else {
-                //const text = page.text.join("");
-                $("#main").append(text);
-            }*/
-            const html = this.getPageHtml(page);
-            $("#main").append(html);
-        }
+    clickPageTurn(pageNum) {
+        $("#main").empty();
+        const page = this.pages.find(p => p.pageNum === pageNum);
+        const html = this.getPageHtml(page);
+        $("#main").append(html);
+
+
     }
 }
 

@@ -22,14 +22,16 @@
       segGen.generate();
       const paged = new PagedStory(segGen.nodes, segGen.edges);
       paged.generate();
-      const viz = new PagedViz(paged.pages);
+      const viz = new PagedViz(paged);
 
       return viz;
     }
 
     const PAGED_VIZ = main();
 
-    
+    function CLICK_PAGE_TURN(pageNum) {
+        PAGED_VIZ.clickPageTurn(pageNum);
+    }
 
     
   </script>
