@@ -310,7 +310,7 @@ class PagedViz {
             \\documentclass{memoir}
             \\usepackage{soul}
             \\usepackage[paperwidth=6in, paperheight=9in,bindingoffset=.75in]{geometry}
-            \\author{[Author list]}
+            \\author{Written by GPT-4o mini\\\\Prompted by Gabriel Altay\\\\Arranged by Michael N. Gagnon}
             \\title{\\HUGE The Legend of Elara}
             \\begin{document}
             \\maketitle
